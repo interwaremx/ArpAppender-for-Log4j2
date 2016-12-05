@@ -22,17 +22,38 @@ Arp appender is a log4j 2.X appender to filter and send formated log messages to
 
 ## Properties:
 ```
-log4j.rootLogger = DEBUG, FILE, arquimedes
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="mx.com.interware.arp.appender">
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+        </Console>
+        <ArquimedesAppender name="ArquimedesAppender"
+                            host="localhost"
+                            port="55555"
+                            reconnectionTime="10000"
+                            maxQueue="50"
+                            sendDelta="1000">
+            <regexp>
+                <![CDATA[ 
+                .*(EJECUTANDO) +([a-zA-Z0-9]+).*time .>>.*|.*(FINALIZANDO) +([a-zA-Z0-9]+).*time .>> +([0-9]+).*
+                ]]>
+            </regexp>
+            <ednFormat>
+            <![CDATA[ 
+                :thread "%thread%", :timestamp %timestamp%, :level "%level%", :start "%s", :tx "%s", :end "%s", :tx "%s", :delta "%s"
+            ]]>
+            </ednFormat>
+        </ArquimedesAppender>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.apache.log4j.xml" level="info"/>
+        <Root level="debug">
+            <AppenderRef ref="ArquimedesAppender" />
+        </Root>
+    </Loggers>
+</Configuration>
 
-#Arquimedes
-log4j.appender.arquimedes=mx.com.interware.arp.appender.ArquimidesAppender
-log4j.appender.arquimedes.regexp=.*(EJECUTANDO) +([a-zA-Z0-9]+).*time .>>.*|.*(FINALIZANDO) +([a-zA-Z0-9]+).*time .>> +([0-9]+).*
-log4j.appender.arquimedes.ednFormat=:thread "%thread%", :timestamp %timestamp%, :level "%level%", :start "%s", :tx "%s", :end "%s", :tx "%s", :delta "%s"
-log4j.appender.arquimedes.host=127.0.0.1
-log4j.appender.arquimedes.port=55555
-log4j.appender.arquimedes.reconnectionTime=10000
-log4j.appender.arquimedes.maxQueue=5
-log4j.appender.arquimedes.sendDelta=1000
 ```
 
 ## Features

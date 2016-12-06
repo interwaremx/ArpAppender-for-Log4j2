@@ -14,6 +14,7 @@ Arp appender is a log4j 2.X appender to filter and send formated log messages to
 
 ## Requirements
  * Log4j 2.X
+ * Ant 2.X
 
 ## Installation
 1. Make sure you already set up log4j 1.X in your project
@@ -64,7 +65,11 @@ For ednFormat key at properties file, there are some keywords:
 **%mensaje%** - Logging Message  
 **%s** - Strings associated to regexp groups  
 
-
+## Build
+run in terminal:
+```
+ant -f build.xml
+```
 ## Javadoc
 https://interwaremx.github.io/ArpAppender/javadoc/
 

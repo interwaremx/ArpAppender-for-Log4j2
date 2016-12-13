@@ -30,7 +30,7 @@ public class EdnUtil {
         Matcher m;
         builder.append("[");
         for (Map<String, String> linea : mapa) {
-            List<String> allMatches = new ArrayList<>();
+            List<String> allMatches = new ArrayList<String>();
             m = p.matcher(linea.get("message"));
             if (m.find()) {
                 for (Integer i = 1; i <= m.groupCount(); i++) {

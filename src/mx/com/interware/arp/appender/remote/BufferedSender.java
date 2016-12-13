@@ -51,22 +51,23 @@ public class BufferedSender {
         BufferedSender.timestampNow = timestampNow;
         this.socket = socket;
         this.delta = delta;
-        this.linesLst = new CopyOnWriteArrayList<>();
+        this.linesLst = new CopyOnWriteArrayList<Map>();
         this.maxQueue = maxQueue;
         this.regexp = regexp;
         this.ednFormat = ednFormat;
-
+        final PersistentSocket socketThread = socket;
+        final Long deltaThread = delta;
         Thread senderWorker = new Thread() {
             @Override
             public void run() {
                 while (true) {
                     try {
-                        if (BufferedSender.timestampNow < (Calendar.getInstance().getTimeInMillis() + delta)
-                                && socket.getIsConnected()
+                        if (BufferedSender.timestampNow < (Calendar.getInstance().getTimeInMillis() + deltaThread)
+                                && socketThread.getIsConnected()
                                 && linesLst.size() > 0) {
                             sendMessage();
                         } else {
-                            sleep(delta);
+                            sleep(deltaThread);
                         }
                     } catch (InterruptedException ex) {
                         Logger.getLogger(BufferedSender.class.getName()).log(Level.SEVERE, null, ex);
@@ -83,7 +84,7 @@ public class BufferedSender {
      * @param event evento del logging obtenido desde el appender
      */
     public synchronized void add(LogEvent event) {
-        Map<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<String, String>();
         data.put("thread", event.getThreadName());
         data.put("level", event.getLevel().toString());
         data.put("timestamp", String.valueOf(event.getTimeMillis()));
@@ -100,10 +101,10 @@ public class BufferedSender {
      * Método que envía y limpia la cola de envío al socket
      */
     private void sendMessage() {
-        List<Map> envio = new CopyOnWriteArrayList<>();
-        linesLst.stream().forEach((mapa) -> {
+        List<Map> envio = new CopyOnWriteArrayList<Map>();
+        for(Map mapa : linesLst){
             envio.add(mapa);
-        });
+        }
         this.flush();
         socket.sendMessage(EdnUtil.createEDN(envio, regexp, ednFormat));
     }
